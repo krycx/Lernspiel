@@ -1,0 +1,100 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0c1e2c;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+    padding: 30px;
+    background-color: #1c3a50;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+  h1 { font-size: 2.5em; margin-bottom: 10px; }
+  p { font-size: 1.2em; }
+  #roundLabel {
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 5px;
+  }
+  #timer {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+  }
+  button {
+    background-color: #f2b705;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover { background-color: #d89b00; }
+  .hidden { display: none; }
+  #dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  #dataTable th, #dataTable td {
+    border: 1px solid #ffffff33;
+    padding: 10px;
+    text-align: left;
+    background-color: #22425f;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #dataTable td:hover { background-color: #2e5779; }
+  .selected { background-color: #b22222 !important; }
+  #result {
+    margin-top: 20px;
+    font-size: 1.3em;
+    padding: 15px;
+    background-color: #133044;
+    border-radius: 10px;
+  }
+  #codeBlock {
+    margin-top: 20px;
+    background-color: #011627;
+    color: #00ffcc;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: monospace;
+    text-align: left;
+  }
+  .card-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .card {
+    background-color: #22425f;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: grab;
+    border: 1px solid #ffffff33;
+    width: fit-content;
+  }
+  .dropzone {
+    min-height: 80px;
+    border: 2px dashed #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    background-color: #0f2c44;
+  }
+  

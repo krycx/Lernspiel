@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Detective</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Data Detective</h1>
+    <p id="roundLabel">🧩 Runde</p>
+    <p id="timer">⏱️ 1:00</p>
+
+    <div id="roundSelection">
+      <button onclick="startGame(1)">Runde 1: Datenqualität</button>
+      <button onclick="startGame(2)">Runde 2: Datenformate</button>
+      <button onclick="startGame(3)">Runde 3: Datenschutz</button>
+      <button onclick="startGame(4)">Runde 4: Visualisierung</button>
+      <button onclick="startGame(5)">Runde 5: Datenarten</button>
+    </div>
+
+    <div id="gameArea" class="hidden">
+      <table id="dataTable"></table>
+      <div id="codeBlock" class="hidden"></div>
+      <button id="checkButton" onclick="checkErrors()">✅ Fehler prüfen</button>
+    </div>
+
+    <div id="result" class="hidden"></div>
+    <button id="nextButton" class="hidden" onclick="nextRound()">➡️ Weiter zur nächsten Runde</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
