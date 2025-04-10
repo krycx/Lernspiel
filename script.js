@@ -9,15 +9,26 @@ const roundData = {
   1: {
     type: "table",
     data: [
-      ["ID", "Name", "Geburtsdatum", "E-Mail", "Telefonnummer", "MitgliedSeit", "Vertragstyp"],
-      ["1", "Müller", "12.03.1991", "mueller@email.de", "01512ABC987", "2018-05-01", "Premium"],
-      ["2", "Peter", "1993-11-30", "", "01761234567", "2019-08-01", "Basic"],
-      ["3", "Meier, Anna", "25/07/1985", "anna.meier@web.de", "00491711223344", "2021-02-30", ""],
-      ["4", "Schmidt", "31.02.1990", "schmidt[at]mail.com", "+49160123456", "2023-04-15", "PREMIUM"],
-      ["5", "Lara", "", "lara@@mail.de", "0160-123-456", "2025-01-01", "Basik"]
+      ["ID", "Name", "Geburtsdatum", "E-Mail", "Telefonnummer", "Vertragstyp"],
+      ["1", "Müller", "12.03.1991", "mueller@email.de", "0151-ABCD", "Premium"],
+      ["2", "Lena", "1993-11-31", "lenaemail.de", "01761234567", "Basic"],
+      ["3", "Meier, Anna", "25/07/1985", "anna.meier@web.de", "00491711223344", ""],
+      ["4", "Schmidt", "30.02.1990", "schmidt@mail,com", "160123456", "PREMIUM"],
+      ["5", "Lara", "", "lara@@mail.de", "0160-123-456", "Basik"]
     ],
-    errors: ["1-4", "2-3", "3-2", "3-6", "4-2", "4-3", "5-2", "5-3", "5-6"],
-    learn: "🔎 Gelernt: Fehler in Datensätzen erkennen (z. B. falsche Formate, Tippfehler, Ungültiges)."
+    errors: [
+      "1-4",  // Telefonnummer ungültig
+      "2-2",  // Ungültiges Datum
+      "2-3",  // E-Mail ohne @
+      "3-1",  // Name mit Komma
+      "3-5",  // Vertragstyp leer
+      "4-2",  // Ungültiges Datum
+      "4-3",  // Komma in Mail
+      "4-4",  // Telefonnummer ohne Vorwahl
+      "5-2",  // Leeres Geburtsdatum
+      "5-5"   // Falsch geschriebener Vertragstyp
+    ],
+    learn: "🔎 Gelernt: Fehler in realistischen Datensätzen erkennen – z. B. ungültige Telefonnummern, E-Mail-Formate, fehlende Angaben und Formatfehler."
   },
   2: {
     type: "codeblock",
@@ -71,6 +82,7 @@ const roundData = {
     learn: "📂 Gelernt: Personenbezogene Daten identifizieren & zwischen Primär-/Sekundärdaten unterscheiden."
   }
 };
+
 function startGame(round) {
   currentRound = round;
   selectedCells = [];
