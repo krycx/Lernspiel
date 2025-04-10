@@ -1,6 +1,7 @@
 let currentRound = 0;
 let selectedCells = [];
 let totalScore = 0;
+let maxTotalScore = 0;
 let timerInterval;
 let timeLeft = 60;
 
@@ -70,7 +71,6 @@ const roundData = {
     learn: "📂 Gelernt: Personenbezogene Daten identifizieren & zwischen Primär-/Sekundärdaten unterscheiden."
   }
 };
-
 function startGame(round) {
   currentRound = round;
   selectedCells = [];
@@ -85,15 +85,95 @@ function startGame(round) {
   resetTimer();
 
   const type = roundData[round].type;
-
   if (type === "cards") setupCardGame();
   else if (type === "quiz") setupQuiz();
   else if (type === "codeblock") setupCodeBlock();
   else if (type === "table") setupTable();
 }
 
+function checkErrors() {
+  clearInterval(timerInterval);
+  const info = roundData[currentRound];
+  let score = 0;
+  let maxScore = 0;
+
+  if (info.type === "cards") {
+    const cards = document.querySelectorAll(".card");
+    maxScore = cards.length;
+    cards.forEach(card => {
+      if (card.dataset.correct === card.dataset.dropped) {
+        score++;
+      }
+    });
+  } else if (info.type === "quiz") {
+    const inputs = document.querySelectorAll("#quizForm input[type='checkbox']");
+    inputs.forEach(input => {
+      const correct = input.dataset.correct === "true";
+      if (correct) maxScore++;
+      if (input.checked && correct) score++;
+    });
+  } else {
+    const errors = info.errors;
+    maxScore = errors.length;
+    selectedCells.forEach(id => {
+      if (errors.includes(id)) {
+        score++;
+      }
+    });
+  }
+
+  totalScore += score;
+  maxTotalScore += maxScore;
+
+  let res = `<p>Runde ${currentRound}: <strong>${score} / ${maxScore}</strong> Punkte</p><p>${info.learn}</p>`;
+  if (currentRound === Object.keys(roundData).length) {
+    res += `<hr><p><strong>Gesamtpunktzahl: ${totalScore} / ${maxTotalScore}</strong></p>`;
+  }
+
+  document.getElementById("result").innerHTML = res;
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("checkButton").classList.add("hidden");
+
+  if (currentRound < Object.keys(roundData).length) {
+    document.getElementById("nextButton").classList.remove("hidden");
+  }
+}
+
+function nextRound() {
+  if (currentRound < Object.keys(roundData).length) {
+    startGame(currentRound + 1);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 60;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      checkErrors();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  document.getElementById("timer").textContent = `⏱️ ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+}
+
+function toggleSelection(id) {
+  const index = selectedCells.indexOf(id);
+  if (index === -1) selectedCells.push(id);
+  else selectedCells.splice(index, 1);
+}
+
 function setupTable() {
   const table = document.getElementById("dataTable");
+  table.innerHTML = "";
   roundData[currentRound].data.forEach((row, r) => {
     const tr = document.createElement("tr");
     row.forEach((cell, c) => {
@@ -135,11 +215,8 @@ function setupQuiz() {
   block.classList.remove("hidden");
   const quiz = roundData[currentRound];
   let html = `<h3>${quiz.question}</h3><form id="quizForm">`;
-  quiz.options.forEach((opt, i) => {
-    html += `
-      <label>
-        <input type="checkbox" data-correct="${opt.correct}"> ${opt.text}
-      </label><br>`;
+  quiz.options.forEach((opt) => {
+    html += `<label><input type="checkbox" data-correct="${opt.correct}"> ${opt.text}</label><br>`;
   });
   html += `</form>`;
   block.innerHTML = html;
@@ -168,7 +245,8 @@ function setupCardGame() {
     card.textContent = item.text;
     card.draggable = true;
     card.dataset.correct = item.category;
-    card.ondragstart = e => e.dataTransfer.setData("text/plain", i);
+    card.dataset.id = i;
+    card.ondragstart = e => e.dataTransfer.setData("cardId", i);
     pool.appendChild(card);
   });
 
@@ -176,91 +254,14 @@ function setupCardGame() {
     zone.ondragover = e => e.preventDefault();
     zone.ondrop = e => {
       e.preventDefault();
-      const idx = e.dataTransfer.getData("text/plain");
-      const card = document.querySelectorAll(".card")[idx];
-      zone.appendChild(card);
-      card.dataset.dropped = zone.dataset.zone;
+      const cardId = e.dataTransfer.getData("cardId");
+      const card = document.querySelector(`.card[data-id='${cardId}']`);
+      if (card) {
+        zone.appendChild(card);
+        card.dataset.dropped = zone.dataset.zone;
+      }
     };
   });
 
   document.getElementById("checkButton").classList.remove("hidden");
-}
-
-function toggleSelection(id) {
-  const index = selectedCells.indexOf(id);
-  if (index === -1) selectedCells.push(id);
-  else selectedCells.splice(index, 1);
-}
-
-function checkErrors() {
-  clearInterval(timerInterval);
-  const info = roundData[currentRound];
-  let score = 0;
-
-  if (info.type === "cards") {
-    document.querySelectorAll(".card").forEach(card => {
-      if (card.dataset.correct === card.dataset.dropped) {
-        score += 2;
-        card.style.backgroundColor = "#3a7d44";
-      } else {
-        card.style.backgroundColor = "#992222";
-      }
-    });
-  } else if (info.type === "quiz") {
-    const inputs = document.querySelectorAll("#quizForm input[type='checkbox']");
-    inputs.forEach(input => {
-      const correct = input.dataset.correct === "true";
-      if (input.checked === correct) {
-        score += 1;
-        input.parentElement.style.color = "#3a7d44";
-      } else {
-        input.parentElement.style.color = "#992222";
-      }
-    });
-  } else {
-    selectedCells.forEach(id => {
-      if (info.errors.includes(id)) score += 2;
-      else score -= 1;
-    });
-  }
-
-  totalScore += score;
-  let res = `<p>Runde ${currentRound}: <strong>${score}</strong> Punkte</p><p>${info.learn}</p>`;
-  if (currentRound === Object.keys(roundData).length) {
-    res += `<hr><p><strong>Gesamtpunktzahl: ${totalScore}</strong></p>`;
-  }
-
-  document.getElementById("result").innerHTML = res;
-  document.getElementById("result").classList.remove("hidden");
-  document.getElementById("checkButton").classList.add("hidden");
-
-  if (currentRound < Object.keys(roundData).length) {
-    document.getElementById("nextButton").classList.remove("hidden");
-  }
-}
-
-function nextRound() {
-  if (currentRound < Object.keys(roundData).length) {
-    startGame(currentRound + 1);
-  }
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timeLeft = 60;
-  updateTimerDisplay();
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerDisplay();
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      checkErrors();
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  document.getElementById("timer").textContent = `⏱️ ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
 }
